@@ -44,7 +44,7 @@ interface IItem {
         IItemExchange.BidShares calldata bidShares,
         EIP712Signature calldata sig
     ) external;
-
+ 
     function listTransfer(uint256 tokenId, address recipient) external; 
     function setAsk(uint256 tokenId, IItemExchange.Ask calldata ask) external; 
     function removeAsk(uint256 tokenId) external; 

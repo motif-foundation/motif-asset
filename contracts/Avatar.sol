@@ -5,8 +5,7 @@ import {ERC721Burnable} from "./ERC721Burnable.sol";
 import {ERC721} from "./ERC721.sol";
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {Math} from "@openzeppelin/contracts/math/Math.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol"; 
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol"; 
@@ -14,7 +13,7 @@ import {Decimal} from "./Decimal.sol";
 import {IAvatarExchange} from "./interfaces/IAvatarExchange.sol";
 import "./interfaces/IAvatar.sol";
  
-contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard, Ownable {
+contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
@@ -26,6 +25,8 @@ contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard, Ownable {
     mapping(uint256 => bytes32) public tokenMetadataHashes; 
     mapping(uint256 => string) private _tokenMetadataURIs; 
     mapping(bytes32 => bool) private _contentHashes;
+
+    uint256 public maxSupply = 100000;//100K Avatars
 
  
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x96905846;  
@@ -113,7 +114,7 @@ contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard, Ownable {
         override
         nonReentrant
     {
-        _mintForCreator(msg.sender, data, bidShares);
+        _mintAvatar(msg.sender, data, bidShares);
     }
  
  
@@ -225,16 +226,21 @@ contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard, Ownable {
     }
  
  
-    function _mintForCreator(
+    function _mintAvatar(
         address creator,
         AvatarData memory data,
         IAvatarExchange.BidShares memory bidShares
     ) internal onlyValidURI(data.tokenURI) onlyValidURI(data.metadataURI) {
+
+    	  require(totalSupply() < maxSupply, 'Land: supply depleted');
+
         require(data.contentHash != 0, "Avatar: content hash must be non-zero");
+        
         require(
             _contentHashes[data.contentHash] == false,
             "Avatar: a token has already been created with this content hash"
         );
+        
         require(
             data.metadataHash != 0,
             "Avatar: metadata hash must be non-zero"

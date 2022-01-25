@@ -1,7 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0
+
 pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
-import {IItemExchange} from "./IItemExchange.sol";
-interface IItem {
+
+import {ISpaceExchange} from "./ISpaceExchange.sol";
+ 
+interface ISpace {
     struct EIP712Signature {
         uint256 deadline;
         uint8 v;
@@ -9,11 +13,13 @@ interface IItem {
         bytes32 s;
     }
 
-    struct ItemData { 
+    struct SpaceData { 
         string tokenURI; 
         string metadataURI; 
         bytes32 contentHash; 
         bytes32 metadataHash;
+        bool isPublic;
+        uint256[] lands; 
     }
 
     event TokenURIUpdated(uint256 indexed _tokenId, address owner, string _uri);
@@ -23,24 +29,32 @@ interface IItem {
         string _uri
     );
 
+    event TokenLandsUpdated(uint256 indexed _tokenId, address owner, uint256[] lands);
+
     function tokenMetadataURI(uint256 tokenId)
         external
         view
         returns (string memory);
 
-    function mint(ItemData calldata data, IItemExchange.BidShares calldata bidShares)
-        external;
+    function checkLandAttach(uint256 tokenId, address sender) external view returns (bool);
 
-    function listTransfer(uint256 tokenId, address recipient) external;
-    function setAsk(uint256 tokenId, IItemExchange.Ask calldata ask) external;
-    function removeAsk(uint256 tokenId) external;
-    function setBid(uint256 tokenId, IItemExchange.Bid calldata bid) external;
-    function removeBid(uint256 tokenId) external;
-    function acceptBid(uint256 tokenId, IItemExchange.Bid calldata bid) external; 
-    function revokeApproval(uint256 tokenId) external;
+    function mint(SpaceData calldata data, ISpaceExchange.BidShares calldata bidShares)
+        external;
+ 
+    function listTransfer(uint256 tokenId, address recipient) external; 
+    function setAsk(uint256 tokenId, ISpaceExchange.Ask calldata ask) external; 
+    function removeAsk(uint256 tokenId) external; 
+    function setBid(uint256 tokenId, ISpaceExchange.Bid calldata bid) external; 
+    function removeBid(uint256 tokenId) external; 
+    function acceptBid(uint256 tokenId, ISpaceExchange.Bid calldata bid) external; 
+    function revokeApproval(uint256 tokenId) external; 
     function updateTokenURI(uint256 tokenId, string calldata tokenURI) external;
+    function updateTokenLands(uint256 tokenId, uint256[] calldata lands) external;
+
+
     function updateTokenMetadataURI(
         uint256 tokenId,
         string calldata metadataURI
-    ) external; 
+    ) external;
+  
 }

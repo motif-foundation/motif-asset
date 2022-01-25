@@ -48,10 +48,5 @@ interface IAvatar {
         uint256 tokenId,
         string calldata metadataURI
     ) external;
- 
-    function permit(
-        address spender,
-        uint256 tokenId,
-        EIP712Signature calldata sig
-    ) external;
+  
 }

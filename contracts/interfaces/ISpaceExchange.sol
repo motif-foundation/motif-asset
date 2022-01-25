@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 
 import {Decimal} from "../Decimal.sol";
 
-interface IItemExchange {
+interface ISpaceExchange {
     struct Bid { 
         uint256 amount; 
         address currency; 
@@ -62,7 +62,7 @@ interface IItemExchange {
         pure
         returns (uint256);
 
-    function configure(address itemContractAddress) external;
+    function configure(address spaceContractAddress) external;
 
     function setBidShares(uint256 tokenId, BidShares calldata bidShares)
         external;

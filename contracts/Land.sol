@@ -22,16 +22,18 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
  	 address public landExchangeContract; 
     address public spaceContract;
     address public landOperatorAddress;
-    uint256 public maxSupply = 1000000;
+    uint256 public maxSupply = 1000000;//1M Parcels
  
     mapping(uint256 => address) public previousTokenOwners; 
     mapping(uint256 => address) public tokenCreators; 
     mapping(address => EnumerableSet.UintSet) private _creatorTokens; 
     mapping(uint256 => bytes32) public tokenContentHashes; 
-    mapping(uint256 => bytes32) public tokenMetadataHashes; 
-    mapping(uint256 => address) public tokenContractAddresses;  
+    mapping(uint256 => bytes32) public tokenMetadataHashes;  
     mapping(uint256 => string) private _tokenMetadataURIs; 
     mapping(bytes32 => bool) private _contentHashes;  
+    mapping(uint256 => int) public tokenXCoordinates;  
+    mapping(uint256 => int) public tokenYCoordinates;  
+    mapping(uint256 => uint256) public tokenSpaces; 
 
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0xc904b9c6;  
 
@@ -97,31 +99,7 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
         );
         _; 
     }
-    constructor(address landExchangeContractAddr, address spaceContractAddr, address landOperatorAddr) 
-        public 
-        ERC721("Motif LAND","LAND") {
-        landExchangeContract = landExchangeContractAddr;
-        spaceContract = spaceContractAddr;
-        landOperatorAddress = landOperatorAddr;
-        _registerInterface(_INTERFACE_ID_ERC721_METADATA);
-    }
-
-
-    modifier onlyValidSpace(address spender,uint256 spaceTokenId) {
-        bool spaceAttachable =  ISpace(spaceContract).checkLandAttach(spaceTokenId,spender);
-        require(
-            spaceAttachable == true,
-            "Land: space is not attachble to land"
-        );
-        _; 
-    }
-    modifier onlyEmptyLand(uint256 tokenId) {
-        require(
-            tokenSpaces[tokenId] == uint256(0x0),
-            "Land: land should be empty"
-        );
-        _; 
-    }
+ 
     constructor(address landExchangeContractAddr, address spaceContractAddr, address landOperatorAddr) 
         public 
         ERC721("Motif LAND","LAND") {
@@ -228,6 +206,14 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
            _mintLand(msg.sender, data[i], bidShares[i]);
         }
     } 
+
+    function revokeApproval(uint256 tokenId) external override nonReentrant {
+        require(
+            msg.sender == getApproved(tokenId),
+            "Land: caller not approved address"
+        );
+        _approve(address(0), tokenId);
+    }
 
   
     function listTransfer(uint256 tokenId, address recipient)
@@ -440,14 +426,6 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
         onlyExistingToken(tokenId)
     {
         tokenMetadataHashes[tokenId] = metadataHash;
-    }
-
-    function _setTokenContract(uint256 tokenId, address tokenContract)
-        internal
-        virtual
-        onlyExistingToken(tokenId)
-    {
-        tokenContractAddresses[tokenId] = tokenContract;
     }
 
     function _setTokenMetadataURI(uint256 tokenId, string memory metadataURI)

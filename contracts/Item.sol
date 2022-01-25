@@ -19,7 +19,7 @@ contract Item is IItem, ERC721Burnable, ReentrancyGuard, Ownable {
     using SafeMath for uint256;
  
     address public itemExchangeContract;
-    uint256 public maxSupply;
+    uint256 public maxSupply; 
  
     mapping(uint256 => address) public previousTokenOwners; 
     mapping(uint256 => address) public tokenCreators; 
@@ -169,48 +169,7 @@ contract Item is IItem, ERC721Burnable, ReentrancyGuard, Ownable {
 
         _mintForCreator(recoveredAddress, data, bidShares);
     }
-
-
-    function mintWithSig(
-        address creator,
-        ItemData memory data,
-        IItemExchange.BidShares memory bidShares,
-        EIP712Signature memory sig
-    ) public override nonReentrant {
-        require(
-            sig.deadline == 0 || sig.deadline >= block.timestamp,
-            "Item: mintWithSig expired"
-        );
-
-        bytes32 domainSeparator = _calculateDomainSeparator();
-
-        bytes32 digest =
-            keccak256(
-                abi.encodePacked(
-                    "\x19\x01",
-                    domainSeparator,
-                    keccak256(
-                        abi.encode(
-                            MINT_WITH_SIG_TYPEHASH,
-                            data.contentHash,
-                            data.metadataHash,
-                            bidShares.creator.value,
-                            mintWithSigNonces[creator]++,
-                            sig.deadline
-                        )
-                    )
-                )
-            );
-
-        address recoveredAddress = ecrecover(digest, sig.v, sig.r, sig.s);
-
-        require(
-            recoveredAddress != address(0) && creator == recoveredAddress,
-            "Item: Signature invalid"
-        );
-
-        _mintForCreator(recoveredAddress, data, bidShares);
-    }
+ 
 
     function listTransfer(uint256 tokenId, address recipient)
         external
@@ -300,8 +259,7 @@ contract Item is IItem, ERC721Burnable, ReentrancyGuard, Ownable {
  
 
     function transferContractOwnership(address newOwner)
-        public
-        override
+        public 
         nonReentrant onlyOwner
     {
         _transferOwnership(newOwner);
@@ -387,7 +345,9 @@ contract Item is IItem, ERC721Burnable, ReentrancyGuard, Ownable {
         ItemData memory data,
         IItemExchange.BidShares memory bidShares
     ) internal onlyValidURI(data.tokenURI) onlyValidURI(data.metadataURI) {
-    	  require(_tokenIdTracker.current() < maxSupply , "Exceeds token supply");
+    	  
+    	  require(totalSupply() < maxSupply, 'Item: supply depleted');
+
         require(data.contentHash != 0, "Item: content hash must be non-zero");
         require(
             _contentHashes[data.contentHash] == false,

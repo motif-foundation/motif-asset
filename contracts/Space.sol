@@ -6,8 +6,7 @@ import {ERC721} from "./ERC721.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
-import {Math} from "@openzeppelin/contracts/math/Math.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Math} from "@openzeppelin/contracts/math/Math.sol"; 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Decimal} from "./Decimal.sol";
@@ -16,20 +15,20 @@ import "./interfaces/ISpace.sol";
 	import {ILand} from "./interfaces/ILand.sol";
 import "./interfaces/ILand.sol"; 
 
-contract Space is ISpace, ERC721Burnable, ReentrancyGuard, Ownable {
-    using Counters for Counters.Counter;
-    using SafeMath for uint256;
+contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
+   using Counters for Counters.Counter;
+   using SafeMath for uint256;
  
-    address public spaceExchangeContract;
+   address public spaceExchangeContract;
   	address public landContract;
-    bool isInitialized = false; 
+   bool isInitialized = false; 
+   uint256 public maxSupply = 100000;//100K Spaces
  
     mapping(uint256 => address) public previousTokenOwners; 
     mapping(uint256 => address) public tokenCreators; 
     mapping(address => EnumerableSet.UintSet) private _creatorTokens; 
     mapping(uint256 => bytes32) public tokenContentHashes; 
     mapping(uint256 => bytes32) public tokenMetadataHashes; 
-    mapping(uint256 => address) public tokenContractAddresses;  
     mapping(uint256 => string) private _tokenMetadataURIs; 
     mapping(bytes32 => bool) private _contentHashes;  
 	 mapping(uint256 => bool) public tokenIsPublicRecord;  
@@ -87,7 +86,6 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard, Ownable {
     constructor(address spaceExchangeContractAddr) 
         public ERC721("Motif Space","SPACE") {
         spaceExchangeContract = spaceExchangeContractAddr;
-        maxSupply = maxSupplyAmount;
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
@@ -279,6 +277,8 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard, Ownable {
         onlyValidURI(data.tokenURI) 
         onlyValidURI(data.metadataURI) { 
 
+        require(totalSupply() < maxSupply, 'Space: supply depleted');
+
         require(data.contentHash != 0, 
             "Space: content hash must be non-zero");
 
@@ -333,6 +333,14 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard, Ownable {
         tokenContentHashes[tokenId] = contentHash;
     }
 
+	function _setTokenIsPublic(uint256 tokenId, bool isPublic)
+        internal
+        virtual
+        onlyExistingToken(tokenId)
+    {
+        tokenIsPublicRecord[tokenId] = isPublic;
+    }
+
     function _setTokenMetadataHash(uint256 tokenId, bytes32 metadataHash)
         internal
         virtual
@@ -340,17 +348,7 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard, Ownable {
     {
         tokenMetadataHashes[tokenId] = metadataHash;
     }
-
-    function _setTokenContract(uint256 tokenId, address tokenContract)
-        internal
-        virtual
-        onlyExistingToken(tokenId)
-    {
-        tokenContractAddresses[tokenId] = tokenContract;
-    }
-
-
-
+ 
     function _setTokenLands(uint256 tokenId, uint256[] memory lands)
         internal
         virtual
