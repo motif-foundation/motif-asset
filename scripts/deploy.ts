@@ -1,10 +1,22 @@
 import fs from 'fs-extra';
+import {readFileSync,  writeFileSync} from 'fs' 
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { ItemFactory } from '../typechain/ItemFactory';
 import { ItemExchangeFactory } from '../typechain/ItemExchangeFactory';
+import { AvatarFactory } from '../typechain/AvatarFactory';
+import { AvatarExchangeFactory } from '../typechain/AvatarExchangeFactory';
+import { SpaceFactory } from '../typechain/SpaceFactory';
+import { SpaceExchangeFactory } from '../typechain/SpaceExchangeFactory';
+import { LandFactory } from '../typechain/LandFactory';
+import { LandExchangeFactory } from '../typechain/LandExchangeFactory';
 
 async function start() {
+
+
+ const landOperatorAddr = "0x8BCE2Eb07Dd40498d61cFDdca25c3533d4efF8B0"
+
+
   const args = require('minimist')(process.argv.slice(2));
 
   if (!args.chainId) {
@@ -29,6 +41,9 @@ async function start() {
       `item already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
     );
   }
+
+
+  //ITEM
 
   console.log('Deploying ItemExchange...');
   const deployTx = await new ItemExchangeFactory(wallet).deploy();
@@ -58,6 +73,117 @@ async function start() {
 
   await fs.writeFile(sharedAddressPath, JSON.stringify(addressBook, null, 2));
   console.log(`Contracts deployed and configured. `);
+
+
+  ///AVATAR
+  if (addressBook.avatarExchange) {
+    throw new Error(
+      `avatarExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+    );
+  }
+  if (addressBook.avatar) {
+    throw new Error(
+      `avatar already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+    );
+  }
+  console.log('Deploying AvatarExchange...');
+  const adeployTx = await new AvatarExchangeFactory(wallet).deploy();
+  console.log('Deploy TX: ', adeployTx.deployTransaction.hash);
+  await adeployTx.deployed();
+  console.log('AvatarExchange deployed at ', adeployTx.address);
+  addressBook.avatarExchange = adeployTx.address;
+
+  console.log('Deploying Avatar...');
+  const avatarDeployTx = await new AvatarFactory(wallet).deploy(
+    addressBook.avatarExchange 
+  );
+  console.log(`Deploy TX: ${avatarDeployTx.deployTransaction.hash}`);
+  await avatarDeployTx.deployed();
+  console.log(`Avatar deployed at ${avatarDeployTx.address}`);
+  addressBook.avatar = avatarDeployTx.address;
+  console.log('Configuring AvatarExchange...');
+  const avatarExchange = AvatarExchangeFactory.connect(addressBook.avatarExchange, wallet);
+  const atx = await avatarExchange.configure(addressBook.avatar);
+  console.log(`AvatarExchange configuration tx: ${atx.hash}`);
+  await atx.wait();
+  console.log(`AvatarExchange configured.`);
+
+  ///SPACE
+  if (addressBook.spaceExchange) {
+    throw new Error(
+      `spaceExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+    );
+  }
+  if (addressBook.space) {
+    throw new Error(
+      `space already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+    );
+  }
+  console.log('Deploying SpaceExchange...');
+  const sdeployTx = await new SpaceExchangeFactory(wallet).deploy();
+  console.log('Deploy TX: ', sdeployTx.deployTransaction.hash);
+  await sdeployTx.deployed();
+  console.log('SpaceExchange deployed at ', sdeployTx.address);
+  addressBook.spaceExchange = sdeployTx.address;
+
+  console.log('Deploying Space...');
+  const spaceDeployTx = await new SpaceFactory(wallet).deploy(
+    addressBook.spaceExchange
+  );
+  console.log(`Deploy TX: ${spaceDeployTx.deployTransaction.hash}`);
+  await spaceDeployTx.deployed();
+  console.log(`Space deployed at ${spaceDeployTx.address}`);
+  addressBook.space = spaceDeployTx.address;
+  console.log('Configuring SpaceExchange...');
+  const spaceExchange = SpaceExchangeFactory.connect(addressBook.spaceExchange, wallet);
+  const stx = await spaceExchange.configure(addressBook.space);
+  console.log(`SpaceExchange configuration tx: ${stx.hash}`);
+  await stx.wait();
+  console.log(`SpaceExchange configured.`);
+
+
+  ///LAND
+  if (addressBook.landExchange) {
+    throw new Error(
+      `landExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+    );
+  }
+  if (addressBook.land) {
+    throw new Error(
+      `land already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+    );
+  }
+  console.log('Deploying LandExchange...');
+  const ldeployTx = await new LandExchangeFactory(wallet).deploy();
+  console.log('Deploy TX: ', ldeployTx.deployTransaction.hash);
+  await ldeployTx.deployed();
+  console.log('LandExchange deployed at ', ldeployTx.address);
+  addressBook.landExchange = ldeployTx.address;
+
+  console.log('Deploying Land...');
+  const landDeployTx = await new LandFactory(wallet).deploy(
+    addressBook.landExchange, addressBook.space, landOperatorAddr
+  );
+  console.log(`Deploy TX: ${landDeployTx.deployTransaction.hash}`);
+  await landDeployTx.deployed();
+  console.log(`Land deployed at ${landDeployTx.address}`);
+  addressBook.land = landDeployTx.address;
+  console.log('Configuring LandExchange...');
+  const landExchange = LandExchangeFactory.connect(addressBook.landExchange, wallet);
+  const ltx = await landExchange.configure(addressBook.land);
+  console.log(`LandExchange configuration tx: ${ltx.hash}`);
+  await ltx.wait();
+  console.log(`LandExchange configured.`);
+
+
+  await writeFileSync(sharedAddressPath, JSON.stringify(addressBook, null, 2));
+  console.log(`Contracts deployed and configured.`);
+
+
+
+ 
+
+
 }
 
 start().catch((e: Error) => {

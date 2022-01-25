@@ -6,13 +6,6 @@ pragma experimental ABIEncoderV2;
 import {ISpaceExchange} from "./ISpaceExchange.sol";
  
 interface ISpace {
-    struct EIP712Signature {
-        uint256 deadline;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-    }
-
     struct SpaceData { 
         string tokenURI; 
         string metadataURI; 

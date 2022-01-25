@@ -6,13 +6,6 @@ pragma experimental ABIEncoderV2;
 import {IAvatarExchange} from "./IAvatarExchange.sol";
  
 interface IAvatar {
-    struct EIP712Signature {
-        uint256 deadline;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-    }
-
     struct AvatarData { 
         string tokenURI; 
         string metadataURI; 

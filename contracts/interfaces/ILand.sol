@@ -6,13 +6,6 @@ pragma experimental ABIEncoderV2;
 import {ILandExchange} from "./ILandExchange.sol";
  
 interface ILand {
-    struct EIP712Signature {
-        uint256 deadline;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-    }
-
     struct LandData { 
         string tokenURI; 
         string metadataURI; 
