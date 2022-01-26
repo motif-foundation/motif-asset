@@ -111,6 +111,16 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         return _tokenMetadataURIs[tokenId];
     }
 
+    function tokenLandDetails(uint256 tokenId)
+        external
+        view
+        override
+        onlyTokenCreated(tokenId)
+        returns (uint256[] memory)
+    {
+        return tokenLands[tokenId];
+    }
+
 	function checkLandAttach(uint256 tokenId, address sender)
         external
         view

@@ -29,6 +29,11 @@ interface ISpace {
         view
         returns (string memory);
 
+    function tokenLandDetails(uint256 tokenId)
+     external
+     view
+     returns (uint256[] memory);
+     
     function checkLandAttach(uint256 tokenId, address sender) external view returns (bool);
 
     function mint(SpaceData calldata data, ISpaceExchange.BidShares calldata bidShares)
