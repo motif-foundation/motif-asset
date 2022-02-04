@@ -24,7 +24,8 @@ contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard {
     mapping(uint256 => bytes32) public tokenContentHashes; 
     mapping(uint256 => bytes32) public tokenMetadataHashes; 
     mapping(uint256 => string) private _tokenMetadataURIs; 
-    mapping(bytes32 => bool) private _contentHashes;
+    mapping(uint256 => bool) private _tokenDefaults; 
+    mapping(bytes32 => bool) private _contentHashes; 
 
     uint256 public maxSupply = 100000;//100K Avatars
 
@@ -107,6 +108,16 @@ contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard {
         returns (string memory)
     {
         return _tokenMetadataURIs[tokenId];
+    }
+
+    function tokenDefault(uint256 tokenId)
+        external
+        view
+        override
+        onlyTokenCreated(tokenId)
+        returns (bool)
+    {
+        return _tokenDefaults[tokenId];
     }
  
     function mint(AvatarData memory data, IAvatarExchange.BidShares memory bidShares)
@@ -224,6 +235,20 @@ contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard {
         _setTokenMetadataURI(tokenId, metadataURI);
         emit TokenMetadataURIUpdated(tokenId, msg.sender, metadataURI);
     }
+
+    function updateTokenDefault(
+        uint256 tokenId,
+        bool isDefault
+    )
+        external
+        override
+        nonReentrant
+        onlyApprovedOrOwner(msg.sender, tokenId)
+        onlyTokenWithMetadataHash(tokenId) 
+    {
+        _setTokenDefault(tokenId, isDefault);
+        emit TokenDefaultUpdated(tokenId, msg.sender, isDefault);
+    }
  
  
     function _mintAvatar(
@@ -253,6 +278,7 @@ contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard {
         _setTokenContentHash(tokenId, data.contentHash);
         _setTokenMetadataHash(tokenId, data.metadataHash);
         _setTokenMetadataURI(tokenId, data.metadataURI);
+        _setTokenDefault(tokenId, data.isDefault);
         _setTokenURI(tokenId, data.tokenURI);
         _creatorTokens[creator].add(tokenId);
         _contentHashes[data.contentHash] = true;
@@ -284,6 +310,14 @@ contract Avatar is IAvatar, ERC721Burnable, ReentrancyGuard {
         onlyExistingToken(tokenId)
     {
         _tokenMetadataURIs[tokenId] = metadataURI;
+    }
+
+    function _setTokenDefault(uint256 tokenId, bool isDefault)
+        internal
+        virtual
+        onlyExistingToken(tokenId)
+    {
+        _tokenDefaults[tokenId] = isDefault;
     }
 
   

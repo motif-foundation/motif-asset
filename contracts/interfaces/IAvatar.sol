@@ -11,6 +11,7 @@ interface IAvatar {
         string metadataURI; 
         bytes32 contentHash; 
         bytes32 metadataHash;
+        bool isDefault;
     }
 
     event TokenURIUpdated(uint256 indexed _tokenId, address owner, string _uri);
@@ -19,11 +20,21 @@ interface IAvatar {
         address owner,
         string _uri
     );
+    event TokenDefaultUpdated(
+        uint256 indexed _tokenId,
+        address owner,
+        bool _isDefault
+    );
 
     function tokenMetadataURI(uint256 tokenId)
         external
         view
         returns (string memory);
+
+    function tokenDefault(uint256 tokenId)
+        external
+        view
+        returns (bool);
 
     function mint(AvatarData calldata data, IAvatarExchange.BidShares calldata bidShares)
         external;
@@ -40,6 +51,11 @@ interface IAvatar {
     function updateTokenMetadataURI(
         uint256 tokenId,
         string calldata metadataURI
+    ) external;
+
+    function updateTokenDefault(
+        uint256 tokenId,
+        bool isDefault
     ) external;
   
 }

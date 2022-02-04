@@ -11,9 +11,11 @@
 	check if addresses/7018.json filled with addresses
 3. Deploy library to npm
 	update package.json with the next version and username
-	npm login (if not logged in)
-	npm pack  //make sure you did yarn build, blue text has to be long!
-	npm publish --access=public // if not works NPM_TOKEN=x npm publish --access=public
+	npm login (if not logged in) 
+	//make sure you did yarn build, blue text has to be long!
+	npm pack  
+	npm publish --access=public 
+	// if not works NPM_TOKEN=x npm publish --access=public
 4. Access to contracts
 	./motif attach '/root/motif/motif-blockchain/build/validatordata/motif.ipc'  
 	var account = "0x7DCB42b41e9CBD56186f69B8dD8C4c89bEe189F3";
