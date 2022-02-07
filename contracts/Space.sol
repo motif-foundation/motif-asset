@@ -31,7 +31,8 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
     mapping(uint256 => bytes32) public tokenMetadataHashes; 
     mapping(uint256 => string) private _tokenMetadataURIs; 
     mapping(bytes32 => bool) private _contentHashes;  
-	 mapping(uint256 => bool) public tokenIsPublicRecord;  
+	 mapping(uint256 => bool) public tokenIsPublicRecord; 
+	 mapping(uint256 => string) public tokenPinRecord;  
     mapping(uint256 => uint256[]) public tokenLands;  
 
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0xa990b5e5;
@@ -99,6 +100,28 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         string memory _tokenURI = _tokenURIs[tokenId];
 
         return _tokenURI;
+    }
+
+    function tokenPin(uint256 tokenId)
+        public
+        view
+        override
+        onlyTokenCreated(tokenId)
+        returns (string memory)
+    {
+        string memory _tokenPin = tokenPinRecord[tokenId];
+
+        return _tokenPin;
+    }
+
+    function tokenIsPublic(uint256 tokenId)
+        public
+        view
+        override
+        onlyTokenCreated(tokenId)
+        returns (bool)
+    { 
+        return tokenIsPublicRecord[tokenId];
     }
 
     function tokenMetadataURI(uint256 tokenId)
@@ -237,6 +260,7 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         emit TokenURIUpdated(tokenId, msg.sender, tokenURI);
     }
 
+
     function updateTokenMetadataURI(
         uint256 tokenId,
         string calldata metadataURI
@@ -252,15 +276,29 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         emit TokenMetadataURIUpdated(tokenId, msg.sender, metadataURI);
     }
 
- function updateTokenLands(
+    function updateTokenPublicity(uint256 tokenId, bool isPublic)
+        external
+        override
+        nonReentrant
+        onlyApprovedOrOwner(msg.sender, tokenId) 
+    { 
+    	  if(isPublic == false) { 
+          require(tokenLands[tokenId].length > 0, 
+          	"Space: private space must have land"); 
+        } 
+        _setTokenPublicity(tokenId, isPublic);
+        emit TokenPublicityUpdated(tokenId, msg.sender, isPublic);
+    }
+
+
+ 	function updateTokenLands(
         uint256 tokenId,
         uint256[] calldata lands
     )
         external
         override
         nonReentrant
-        onlyApprovedOrOwner(msg.sender, tokenId)
-        onlyTokenWithMetadataHash(tokenId) 
+        onlyApprovedOrOwner(msg.sender, tokenId) 
     {
         for (uint i = 0; i < lands.length; i++) { 
             bool landAttachable =  ILand(landContract).checkSpaceAttach(lands[i],msg.sender);
@@ -302,14 +340,21 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
             "Space: metadata hash must be non-zero"
         );
 
+        require(
+        		bytes(data.pin).length != 0, 
+            "Space: pin must not be empty"
+        );
+
         require((data.isPublic == true || data.isPublic == false), 
             "Space: space access cannot be empty");
 
+		  if(!data.isPublic) {
+           require(data.lands.length > 0, "Space: private space must have land"); 
+        }  
 
         uint256 tokenId = _tokenIdTracker.current();
 
-        if(data.isPublic) {
-            require(data.lands.length > 0, "Space: public space must have land"); 
+        if(data.lands.length > 0) { 
             for (uint i = 0; i < data.lands.length; i++) { 
                 bool landAttachable =  ILand(landContract).checkSpaceAttach(data.lands[i],msg.sender);
                 require(landAttachable == true,
@@ -327,7 +372,8 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         _setTokenMetadataHash(tokenId, data.metadataHash);
         _setTokenMetadataURI(tokenId, data.metadataURI);
         _setTokenURI(tokenId, data.tokenURI);
-        _setTokenIsPublic(tokenId, data.isPublic); 
+        _setTokenPublicity(tokenId, data.isPublic); 
+        _setTokenPin(tokenId, data.pin);
         _creatorTokens[creator].add(tokenId);
         _contentHashes[data.contentHash] = true; 
         tokenCreators[tokenId] = creator;
@@ -343,7 +389,7 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         tokenContentHashes[tokenId] = contentHash;
     }
 
-	function _setTokenIsPublic(uint256 tokenId, bool isPublic)
+	function _setTokenPublicity(uint256 tokenId, bool isPublic)
         internal
         virtual
         onlyExistingToken(tokenId)
@@ -351,7 +397,15 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         tokenIsPublicRecord[tokenId] = isPublic;
     }
 
-    function _setTokenMetadataHash(uint256 tokenId, bytes32 metadataHash)
+   function _setTokenPin(uint256 tokenId,  string memory pin)
+        internal
+        virtual
+        onlyExistingToken(tokenId)
+    {
+        tokenPinRecord[tokenId] = pin;
+    }
+
+   function _setTokenMetadataHash(uint256 tokenId, bytes32 metadataHash)
         internal
         virtual
         onlyExistingToken(tokenId)

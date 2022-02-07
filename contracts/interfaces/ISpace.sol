@@ -13,9 +13,11 @@ interface ISpace {
         bytes32 metadataHash;
         bool isPublic;
         uint256[] lands; 
+        string pin;
     }
 
     event TokenURIUpdated(uint256 indexed _tokenId, address owner, string _uri);
+    event TokenPublicityUpdated(uint256 indexed _tokenId, address owner, bool _isPublic);
     event TokenMetadataURIUpdated(
         uint256 indexed _tokenId,
         address owner,
@@ -28,6 +30,16 @@ interface ISpace {
         external
         view
         returns (string memory);
+
+    function tokenPin(uint256 tokenId)
+        external
+        view
+        returns (string memory);
+
+    function tokenIsPublic(uint256 tokenId)
+        external
+        view
+        returns (bool);
 
     function tokenLandDetails(uint256 tokenId)
      external
@@ -47,8 +59,8 @@ interface ISpace {
     function acceptBid(uint256 tokenId, ISpaceExchange.Bid calldata bid) external; 
     function revokeApproval(uint256 tokenId) external; 
     function updateTokenURI(uint256 tokenId, string calldata tokenURI) external;
+    function updateTokenPublicity(uint256 tokenId, bool isPublic) external;
     function updateTokenLands(uint256 tokenId, uint256[] calldata lands) external;
-
 
     function updateTokenMetadataURI(
         uint256 tokenId,
