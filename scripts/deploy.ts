@@ -14,7 +14,7 @@ import { LandExchangeFactory } from '../typechain/LandExchangeFactory';
 async function start() {
 
 
- const landOperatorAddr = "0x8BCE2Eb07Dd40498d61cFDdca25c3533d4efF8B0"
+ const landOperatorAddr = "0x75ce0516387D7B149E368e43ed585dF1f0F5C875"
 
 
   const args = require('minimist')(process.argv.slice(2));
@@ -31,22 +31,22 @@ async function start() {
   const sharedAddressPath = `${process.cwd()}/addresses/${args.chainId}.json`;
   // @ts-ignore
   const addressBook = JSON.parse(await fs.readFileSync(sharedAddressPath));
-  if (addressBook.itemExchange) {
-    throw new Error(
-      `itemExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
-    );
-  }
-  if (addressBook.item) {
-    throw new Error(
-      `item already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
-    );
-  }
+  // if (addressBook.itemExchange) {
+  //   throw new Error(
+  //     `itemExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+  //   );
+  // }
+  // if (addressBook.item) {
+  //   throw new Error(
+  //     `item already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+  //   );
+  // }
 
 
   //ITEM
 
   console.log('Deploying ItemExchange...');
-  const deployTx = await new ItemExchangeFactory(wallet).deploy();
+  const deployTx = await new ItemExchangeFactory(wallet).deploy("8107");
   console.log('Deploy TX: ', deployTx.deployTransaction.hash);
   await deployTx.deployed();
   console.log('ItemExchange deployed at ', deployTx.address);
@@ -57,7 +57,8 @@ async function start() {
     addressBook.itemExchange,
     "Motif",
     "MOTIF",
-    1000000
+    1000000,
+    "8107"
   );
   console.log(`Deploy TX: ${itemDeployTx.deployTransaction.hash}`);
   await itemDeployTx.deployed();
@@ -74,7 +75,7 @@ async function start() {
   await fs.writeFile(sharedAddressPath, JSON.stringify(addressBook, null, 2));
   console.log(`Contracts deployed and configured. `);
 
-
+/*
   ///AVATAR
   if (addressBook.avatarExchange) {
     throw new Error(
@@ -174,7 +175,7 @@ async function start() {
   console.log(`LandExchange configuration tx: ${ltx.hash}`);
   await ltx.wait();
   console.log(`LandExchange configured.`);
-
+*/
 
   await writeFileSync(sharedAddressPath, JSON.stringify(addressBook, null, 2));
   console.log(`Contracts deployed and configured.`);

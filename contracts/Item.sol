@@ -19,6 +19,7 @@ contract Item is IItem, ERC721Burnable, ReentrancyGuard, Ownable {
     using SafeMath for uint256;
  
     address public itemExchangeContract;
+    string public itemIdentifier;
     uint256 public maxSupply; 
  
     mapping(uint256 => address) public previousTokenOwners; 
@@ -83,10 +84,11 @@ contract Item is IItem, ERC721Burnable, ReentrancyGuard, Ownable {
         _;
     }
 
-    constructor(address itemExchangeContractAddr, string memory name_,string memory symbol_, uint256 maxSupplyAmount) 
+    constructor(address itemExchangeContractAddr, string memory name_,string memory symbol_, uint256 maxSupplyAmount, string memory itemIdentifierString) 
         public ERC721(name_,symbol_) {
         itemExchangeContract = itemExchangeContractAddr;
         maxSupply = maxSupplyAmount;
+        itemIdentifier = itemIdentifierString;
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
@@ -112,6 +114,15 @@ contract Item is IItem, ERC721Burnable, ReentrancyGuard, Ownable {
         return _tokenMetadataURIs[tokenId];
     }
 
+    function getItemIdentifier()
+        external
+        view
+        override
+        returns (string memory)
+    {
+        return itemIdentifier;
+    }
+ 
     function mint(ItemData memory data, IItemExchange.BidShares memory bidShares)
         public
         override

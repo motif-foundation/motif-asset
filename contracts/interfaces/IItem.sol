@@ -32,6 +32,11 @@ interface IItem {
         view
         returns (string memory);
 
+    function getItemIdentifier()
+        external
+        view
+        returns (string memory);
+
     function mint(ItemData calldata data, IItemExchange.BidShares calldata bidShares)
         external;
 

@@ -15,9 +15,11 @@ contract ItemExchange is IItemExchange {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
  
-    address public itemContract;
- 
+    address public itemContract; 
+    string public itemExchangeIdentifier; 
+    
     address private _owner; 
+
     mapping(uint256 => mapping(address => Bid)) private _tokenBidders; 
     mapping(uint256 => BidShares) private _bidShares; 
     mapping(uint256 => Ask) private _tokenAsks;
@@ -43,6 +45,15 @@ contract ItemExchange is IItemExchange {
         returns (Ask memory)
     {
         return _tokenAsks[tokenId];
+    }
+
+    function getItemExchangeIdentifier()
+        external
+        view
+        override
+        returns (string memory)
+    {
+        return itemExchangeIdentifier;
     }
 
     function bidSharesForToken(uint256 tokenId)
@@ -94,8 +105,9 @@ contract ItemExchange is IItemExchange {
         return Decimal.mul(amount, sharePercentage).div(100);
     }
  
-    constructor() public {
+    constructor(string memory itemExchangeIdentifierString) public {
         _owner = msg.sender;
+        itemExchangeIdentifier = itemExchangeIdentifierString;
     }
  
     function configure(address itemContractAddress) external override {

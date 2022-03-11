@@ -42,6 +42,11 @@ interface IItemExchange {
         view
         returns (Ask memory);
 
+    function getItemExchangeIdentifier()
+        external
+        view
+        returns (string memory); 
+
     function bidSharesForToken(uint256 tokenId)
         external
         view
