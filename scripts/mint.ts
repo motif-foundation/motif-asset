@@ -27,9 +27,7 @@ async function start() {
   if (!args.creatorShare && args.creatorShare !== 0) {
     throw new Error('--creatorShare creator share is required');
   }
-  const path = `${process.cwd()}/.env${
-    args.chainId === 1 ? '.prod' : args.chainId === 4 ? '.dev' : '.local'
-  }`;
+  const path = `${process.cwd()}/.env.prod`
   await require('dotenv').config({ path });
   const provider = new JsonRpcProvider(process.env.RPC_ENDPOINT);
   // const wallet = new Wallet(`0x${process.env.PRIVATE_KEY}`, provider);

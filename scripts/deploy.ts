@@ -22,9 +22,7 @@ async function start() {
   if (!args.chainId) {
     throw new Error('--chainId chain ID is required');
   }
-  const path = `${process.cwd()}/.env${
-    args.chainId === 7018 ? '.prod' : args.chainId === 4 ? '.dev' : '.local'
-  }`;
+  const path = `${process.cwd()}/.env.prod`
   await require('dotenv').config({ path });
   const provider = new JsonRpcProvider(process.env.RPC_ENDPOINT);
   const wallet = new Wallet(`0x${process.env.PRIVATE_KEY}`, provider);
@@ -75,7 +73,7 @@ async function start() {
   await fs.writeFile(sharedAddressPath, JSON.stringify(addressBook, null, 2));
   console.log(`Contracts deployed and configured. `);
 
-/*
+ 
   ///AVATAR
   if (addressBook.avatarExchange) {
     throw new Error(
@@ -175,7 +173,7 @@ async function start() {
   console.log(`LandExchange configuration tx: ${ltx.hash}`);
   await ltx.wait();
   console.log(`LandExchange configured.`);
-*/
+ 
 
   await writeFileSync(sharedAddressPath, JSON.stringify(addressBook, null, 2));
   console.log(`Contracts deployed and configured.`);
