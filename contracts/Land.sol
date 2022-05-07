@@ -22,7 +22,7 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
  	 address public landExchangeContract; 
     address public spaceContract;
     address public landOperatorAddress;
-    uint256 public maxSupply = 1000000;//1M Parcels
+    uint256 public maxSupply = 1000000;//1M Usable Parcels
  
     mapping(uint256 => address) public previousTokenOwners; 
     mapping(uint256 => address) public tokenCreators; 
@@ -197,11 +197,15 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
         _mintLand(msg.sender, data, bidShares);
     }
 
-     function mintMultiple(LandData[] memory data, ILandExchange.BidShares[] memory bidShares)
+    function mintMultiple(LandData[] memory data, ILandExchange.BidShares[] memory bidShares)
         public
         override
         nonReentrant
     { 
+    	  require(data.length > 0, "data must not be empty");
+	     require(data.length <= 10000, "Length of data must be equal to or less than 10000");
+	     require(data.length ==  bidShares.length, "Length of data and bidShares must match");
+
         for (uint i = 0; i < data.length; i++) {
            _mintLand(msg.sender, data[i], bidShares[i]);
         }
@@ -329,9 +333,7 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
     {
         _setTokenMetadataURI(tokenId, metadataURI);
         emit TokenMetadataURIUpdated(tokenId, msg.sender, metadataURI);
-    }
-
-
+    } 
 
     function updateLandOperatorAddress(
         address newLandOperatorAddr 
@@ -369,10 +371,9 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
     {
         _removeTokenSpace(tokenId);
         emit TokenSpaceRemoved(tokenId, msg.sender);
-    }
-    
+    } 
 
-   function _mintLand(
+    function _mintLand(
         address creator,
         LandData memory data,
         ILandExchange.BidShares memory bidShares
@@ -382,8 +383,8 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
 
         require(msg.sender == landOperatorAddress, "Land: only land operator can mint");
 
-        require(-100 < data.xCoordinate && data.xCoordinate < 100 &&
-                -100 < data.yCoordinate && data.yCoordinate < 100, 
+        require(-1000 < data.xCoordinate && data.xCoordinate < 1000 &&
+                -1000 < data.yCoordinate && data.yCoordinate < 1000, 
                 "Land: coordinates should be inside bounds");
 
         require(data.contentHash != 0, "Land: content hash must be non-zero");

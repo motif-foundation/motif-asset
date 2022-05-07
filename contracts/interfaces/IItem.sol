@@ -39,6 +39,9 @@ interface IItem {
 
     function mint(ItemData calldata data, IItemExchange.BidShares calldata bidShares)
         external;
+        
+    function mintMultiple(ItemData[] calldata data, IItemExchange.BidShares[] calldata bidShares)
+        external;
 
     function mintForCreatorWithoutSig(address creator, ItemData calldata data, IItemExchange.BidShares calldata bidShares)
         external; 

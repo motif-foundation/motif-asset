@@ -131,6 +131,19 @@ contract Item is IItem, ERC721Burnable, ReentrancyGuard, Ownable {
         _mintForCreator(msg.sender, data, bidShares);
     }
 
+    function mintMultiple(ItemData[] memory data, IItemExchange.BidShares[] memory bidShares)
+        public
+        override
+        nonReentrant
+    { 
+    	  require(data.length > 0, "data must not be empty");
+	     require(data.length <= 10000, "Length of data must be equal to or less than 10000");
+	     require(data.length ==  bidShares.length, "Length of data and bidShares must match");
+
+        for (uint i = 0; i < data.length; i++) {
+           _mintForCreator(msg.sender, data[i], bidShares[i]);
+        }
+    }  
 
     function mintForCreatorWithoutSig(address creator, ItemData memory data, IItemExchange.BidShares memory bidShares)
         public

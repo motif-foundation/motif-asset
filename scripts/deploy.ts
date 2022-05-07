@@ -14,7 +14,7 @@ import { LandExchangeFactory } from '../typechain/LandExchangeFactory';
 async function start() {
 
 
- const landOperatorAddr = "0x75ce0516387D7B149E368e43ed585dF1f0F5C875"
+ const landOperatorAddr = "0xE47646C2BAd7d9f84b67DCf02253eD649e69b336"
 
 
   const args = require('minimist')(process.argv.slice(2));
@@ -53,7 +53,7 @@ async function start() {
   console.log('Deploying Item...');
   const itemDeployTx = await new ItemFactory(wallet).deploy(
     addressBook.itemExchange,
-    "Motif",
+    "Motif Item",
     "MOTIF",
     1000000,
     "8107"
