@@ -73,7 +73,7 @@ async function start() {
   await fs.writeFile(sharedAddressPath, JSON.stringify(addressBook, null, 2));
   console.log(`Contracts deployed and configured. `);
 
- 
+ /*
   ///AVATAR
   if (addressBook.avatarExchange) {
     throw new Error(
@@ -138,10 +138,10 @@ async function start() {
   const stx = await spaceExchange.configure(addressBook.space);
   console.log(`SpaceExchange configuration tx: ${stx.hash}`);
   await stx.wait();
-  console.log(`SpaceExchange configured.`);
+  console.log(`SpaceExchange configured.`);*/
 
 
-  ///LAND
+/*  ///LAND
   if (addressBook.landExchange) {
     throw new Error(
       `landExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
@@ -172,7 +172,7 @@ async function start() {
   const ltx = await landExchange.configure(addressBook.land);
   console.log(`LandExchange configuration tx: ${ltx.hash}`);
   await ltx.wait();
-  console.log(`LandExchange configured.`);
+  console.log(`LandExchange configured.`);*/
  
 
   await writeFileSync(sharedAddressPath, JSON.stringify(addressBook, null, 2));
