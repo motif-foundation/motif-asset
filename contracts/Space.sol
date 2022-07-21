@@ -30,8 +30,7 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
     mapping(uint256 => bytes32) public tokenContentHashes; 
     mapping(uint256 => bytes32) public tokenMetadataHashes; 
     mapping(uint256 => string) private _tokenMetadataURIs; 
-    mapping(bytes32 => bool) private _contentHashes;  
-	 mapping(uint256 => bool) public tokenIsPublicRecord; 
+    mapping(bytes32 => bool) private _contentHashes; 
 	 mapping(uint256 => string) public tokenPinRecord;  
     mapping(uint256 => uint256[]) public tokenLands;  
 
@@ -112,16 +111,6 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         string memory _tokenPin = tokenPinRecord[tokenId];
 
         return _tokenPin;
-    }
-
-    function tokenIsPublic(uint256 tokenId)
-        public
-        view
-        override
-        onlyTokenCreated(tokenId)
-        returns (bool)
-    { 
-        return tokenIsPublicRecord[tokenId];
     }
 
     function tokenMetadataURI(uint256 tokenId)
@@ -275,21 +264,7 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         _setTokenMetadataURI(tokenId, metadataURI);
         emit TokenMetadataURIUpdated(tokenId, msg.sender, metadataURI);
     }
-
-    function updateTokenPublicity(uint256 tokenId, bool isPublic)
-        external
-        override
-        nonReentrant
-        onlyApprovedOrOwner(msg.sender, tokenId) 
-    { 
-    	  if(isPublic == false) { 
-          require(tokenLands[tokenId].length > 0, 
-          	"Space: private space must have land"); 
-        } 
-        _setTokenPublicity(tokenId, isPublic);
-        emit TokenPublicityUpdated(tokenId, msg.sender, isPublic);
-    }
-
+ 
 
  	function updateTokenLands(
         uint256 tokenId,
@@ -345,13 +320,6 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
             "Space: pin must not be empty"
         );
 
-        require((data.isPublic == true || data.isPublic == false), 
-            "Space: space access cannot be empty");
-
-		  if(!data.isPublic) {
-           require(data.lands.length > 0, "Space: private space must have land"); 
-        }  
-
         uint256 tokenId = _tokenIdTracker.current();
 
         if(data.lands.length > 0) { 
@@ -371,8 +339,7 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         _setTokenContentHash(tokenId, data.contentHash);
         _setTokenMetadataHash(tokenId, data.metadataHash);
         _setTokenMetadataURI(tokenId, data.metadataURI);
-        _setTokenURI(tokenId, data.tokenURI);
-        _setTokenPublicity(tokenId, data.isPublic); 
+        _setTokenURI(tokenId, data.tokenURI); 
         _setTokenPin(tokenId, data.pin);
         _creatorTokens[creator].add(tokenId);
         _contentHashes[data.contentHash] = true; 
@@ -387,14 +354,6 @@ contract Space is ISpace, ERC721Burnable, ReentrancyGuard {
         onlyExistingToken(tokenId)
     {
         tokenContentHashes[tokenId] = contentHash;
-    }
-
-	function _setTokenPublicity(uint256 tokenId, bool isPublic)
-        internal
-        virtual
-        onlyExistingToken(tokenId)
-    {
-        tokenIsPublicRecord[tokenId] = isPublic;
     }
 
    function _setTokenPin(uint256 tokenId,  string memory pin)

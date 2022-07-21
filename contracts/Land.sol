@@ -22,7 +22,7 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
  	 address public landExchangeContract; 
     address public spaceContract;
     address public landOperatorAddress;
-    uint256 public maxSupply = 1000000;//1M Usable Parcels
+    uint256 public maxSupply = 10000;//10K Parcels
  
     mapping(uint256 => address) public previousTokenOwners; 
     mapping(uint256 => address) public tokenCreators; 
@@ -203,7 +203,7 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
         nonReentrant
     { 
     	  require(data.length > 0, "data must not be empty");
-	     require(data.length <= 10000, "Length of data must be equal to or less than 10000");
+	     require(data.length <= 1000, "Length of data must be equal to or less than 10000");
 	     require(data.length ==  bidShares.length, "Length of data and bidShares must match");
 
         for (uint i = 0; i < data.length; i++) {
@@ -383,8 +383,8 @@ contract Land is ILand, ERC721Burnable, ReentrancyGuard {
 
         require(msg.sender == landOperatorAddress, "Land: only land operator can mint");
 
-        require(-1000 < data.xCoordinate && data.xCoordinate < 1000 &&
-                -1000 < data.yCoordinate && data.yCoordinate < 1000, 
+        require(-100 < data.xCoordinate && data.xCoordinate < 100 &&
+                -100 < data.yCoordinate && data.yCoordinate < 100, 
                 "Land: coordinates should be inside bounds");
 
         require(data.contentHash != 0, "Land: content hash must be non-zero");
