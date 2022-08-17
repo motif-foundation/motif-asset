@@ -14,7 +14,7 @@ import { LandExchangeFactory } from '../typechain/LandExchangeFactory';
 async function start() {
 
 
- const landOperatorAddr = "0xE47646C2BAd7d9f84b67DCf02253eD649e69b336"
+ const landOperatorAddr = "0x0683c7e05691150a6ABCc9Fc08cE36805d502edA"// "0x6E68745aafCF19482022B7f5F17c00c083dCE0D1" mainnet
 
   const args = require('minimist')(process.argv.slice(2));
 
@@ -41,71 +41,70 @@ async function start() {
   // }
 
 
-  //ITEM
- // 
+  //ITEM 
 
- // console.log('Deploying ItemExchange...');
- //  const deployTx = await new ItemExchangeFactory(wallet).deploy("8107",{ gasPrice:  feeData.gasPrice }) 
- //  console.log('Deploy TX: ', deployTx.deployTransaction.hash);
- //  await deployTx.deployed();
- //  console.log('ItemExchange deployed at ', deployTx.address);
- //  addressBook.itemExchange = deployTx.address;
+ console.log('Deploying ItemExchange...');
+  const deployTx = await new ItemExchangeFactory(wallet).deploy("8107",{ gasPrice:  feeData.gasPrice }) 
+  console.log('Deploy TX: ', deployTx.deployTransaction.hash);
+  await deployTx.deployed();
+  console.log('ItemExchange deployed at ', deployTx.address);
+  addressBook.itemExchange = deployTx.address;
 
- //  console.log('Deploying Item...');
- //  const itemDeployTx = await new ItemFactory(wallet).deploy(
- //    addressBook.itemExchange,
- //    "Motif Item",
- //    "MOTIF",
- //    1000000,
- //    "8107", { gasPrice:  feeData.gasPrice }
- //  ) 
- //  console.log(`Deploy TX: ${itemDeployTx.deployTransaction.hash}`);
- //  await itemDeployTx.deployed();
- //  console.log(`Item deployed at ${itemDeployTx.address}`);
- //  addressBook.item = itemDeployTx.address;
+  console.log('Deploying Item...');
+  const itemDeployTx = await new ItemFactory(wallet).deploy(
+    addressBook.itemExchange,
+    "Motif Item",
+    "MOTIF",
+    1000000,
+    "8107", { gasPrice:  feeData.gasPrice }
+  ) 
+  console.log(`Deploy TX: ${itemDeployTx.deployTransaction.hash}`);
+  await itemDeployTx.deployed();
+  console.log(`Item deployed at ${itemDeployTx.address}`);
+  addressBook.item = itemDeployTx.address;
 
- //  console.log('Configuring ItemExchange...');
- //  const itemExchange = ItemExchangeFactory.connect(addressBook.itemExchange, wallet)
- //  const tx = await itemExchange.configure(addressBook.item, { gasPrice:  feeData.gasPrice });
- //  console.log(`ItemExchange configuration tx: ${tx.hash}`);
- //  await tx.wait();
- //  console.log(`ItemExchange configured.`);
+  console.log('Configuring ItemExchange...');
+  const itemExchange = ItemExchangeFactory.connect(addressBook.itemExchange, wallet)
+  const tx = await itemExchange.configure(addressBook.item, { gasPrice:  feeData.gasPrice });
+  console.log(`ItemExchange configuration tx: ${tx.hash}`);
+  await tx.wait();
+  console.log(`ItemExchange configured.`);
 
- //  await fs.writeFile(sharedAddressPath, JSON.stringify(addressBook, null, 2));
- //  console.log(`Contracts deployed and configured. `);
+  await fs.writeFile(sharedAddressPath, JSON.stringify(addressBook, null, 2));
+  console.log(`Contracts deployed and configured. `);
  
- //  ///AVATAR
- //  if (addressBook.avatarExchange) {
- //    throw new Error(
- //      `avatarExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
- //    );
- //  }
- //  if (addressBook.avatar) {
- //    throw new Error(
- //      `avatar already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
- //    );
- //  }
- //  console.log('Deploying AvatarExchange...');
- //  const adeployTx = await new AvatarExchangeFactory(wallet).deploy({ gasPrice:  feeData.gasPrice });
- //  console.log('Deploy TX: ', adeployTx.deployTransaction.hash);
- //  await adeployTx.deployed();
- //  console.log('AvatarExchange deployed at ', adeployTx.address);
- //  addressBook.avatarExchange = adeployTx.address;
+  ///AVATAR
+  if (addressBook.avatarExchange) {
+    throw new Error(
+      `avatarExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+    );
+  }
+  if (addressBook.avatar) {
+    throw new Error(
+      `avatar already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+    );
+  }
+  console.log('Deploying AvatarExchange...');
+  const adeployTx = await new AvatarExchangeFactory(wallet).deploy({ gasPrice:  feeData.gasPrice });
+  console.log('Deploy TX: ', adeployTx.deployTransaction.hash);
+  await adeployTx.deployed();
+  console.log('AvatarExchange deployed at ', adeployTx.address);
+  addressBook.avatarExchange = adeployTx.address;
 
- //  console.log('Deploying Avatar...');
- //  const avatarDeployTx = await new AvatarFactory(wallet).deploy(
- //    addressBook.avatarExchange,{ gasPrice:  feeData.gasPrice }
- //  );
- //  console.log(`Deploy TX: ${avatarDeployTx.deployTransaction.hash}`);
- //  await avatarDeployTx.deployed();
- //  console.log(`Avatar deployed at ${avatarDeployTx.address}`);
- //  addressBook.avatar = avatarDeployTx.address;
- //  console.log('Configuring AvatarExchange...');
- //  const avatarExchange = AvatarExchangeFactory.connect(addressBook.avatarExchange, wallet);
- //  const atx = await avatarExchange.configure(addressBook.avatar, { gasPrice:  feeData.gasPrice });
- //  console.log(`AvatarExchange configuration tx: ${atx.hash}`);
- //  await atx.wait();
- //  console.log(`AvatarExchange configured.`);
+  console.log('Deploying Avatar...');
+  const avatarDeployTx = await new AvatarFactory(wallet).deploy(
+    addressBook.avatarExchange,{ gasPrice:  feeData.gasPrice }
+  );
+  console.log(`Deploy TX: ${avatarDeployTx.deployTransaction.hash}`);
+  await avatarDeployTx.deployed();
+  console.log(`Avatar deployed at ${avatarDeployTx.address}`);
+  addressBook.avatar = avatarDeployTx.address;
+  console.log('Configuring AvatarExchange...');
+  const avatarExchange = AvatarExchangeFactory.connect(addressBook.avatarExchange, wallet);
+  const atx = await avatarExchange.configure(addressBook.avatar, { gasPrice:  feeData.gasPrice });
+  console.log(`AvatarExchange configuration tx: ${atx.hash}`);
+  await atx.wait();
+  console.log(`AvatarExchange configured.`);
 
   ///SPACE
   if (addressBook.spaceExchange) {
@@ -141,7 +140,7 @@ async function start() {
   console.log(`SpaceExchange configured.`); 
 
 
-/*  ///LAND
+ ///LAND
   if (addressBook.landExchange) {
     throw new Error(
       `landExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
@@ -172,7 +171,7 @@ async function start() {
   const ltx = await landExchange.configure(addressBook.land);
   console.log(`LandExchange configuration tx: ${ltx.hash}`);
   await ltx.wait();
-  console.log(`LandExchange configured.`);*/
+  console.log(`LandExchange configured.`); 
  
 
   await writeFileSync(sharedAddressPath, JSON.stringify(addressBook, null, 2));
