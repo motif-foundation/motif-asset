@@ -14,7 +14,7 @@ import { LandExchangeFactory } from '../typechain/LandExchangeFactory';
 async function start() {
 
 
- const landOperatorAddr = "0x0683c7e05691150a6ABCc9Fc08cE36805d502edA"// "0x6E68745aafCF19482022B7f5F17c00c083dCE0D1" mainnet
+ const landOperatorAddr = "0xa908df4450cb5dcc984c1C39272274cd8Ecb857d"// "0x6E68745aafCF19482022B7f5F17c00c083dCE0D1" mainnet
 
   const args = require('minimist')(process.argv.slice(2));
 
@@ -55,7 +55,7 @@ async function start() {
     addressBook.itemExchange,
     "Motif Item",
     "MOTIF",
-    1000000,
+    100000000, //100M
     "8107", { gasPrice:  feeData.gasPrice }
   ) 
   console.log(`Deploy TX: ${itemDeployTx.deployTransaction.hash}`);
