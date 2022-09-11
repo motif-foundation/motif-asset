@@ -1,10 +1,10 @@
 {
-  "itemExchange": "",
-  "item": "",
-  "avatarExchange": "",
-  "avatar": "",
-  "spaceExchange": "",
-  "space": "",
+  "itemExchange": "0xAC47253FA480Ab0A364fD869eFC8B1412f1B9778",
+  "item": "0xDbd6DB3783bc3Ddd8B5395ff10a638614881Ddbc",
+  "avatarExchange": "0x91900902572727E1450EAAb886BA7DB711c801bb",
+  "avatar": "0xaA3C395721EfA74660d08911f51DFa453979eE10",
+  "spaceExchange": "0xc96aDd8D635F982BD4DFD57c70eF87a967FC00F5",
+  "space": "0xd49938d1c763D61c328dd175768Fcd0255c9D249",
   "landExchange": "",
   "land": ""
 }

@@ -14,7 +14,7 @@ import { LandExchangeFactory } from '../typechain/LandExchangeFactory';
 async function start() {
 
 
- const landOperatorAddr = "0xa908df4450cb5dcc984c1C39272274cd8Ecb857d"// "0x6E68745aafCF19482022B7f5F17c00c083dCE0D1" mainnet
+ const landOperatorAddr = "0xae4e111b272961b41cf9e14541d54ee11a5371ba"// "0x6E68745aafCF19482022B7f5F17c00c083dCE0D1" mainnet
 
   const args = require('minimist')(process.argv.slice(2));
 
@@ -140,47 +140,43 @@ async function start() {
   console.log(`SpaceExchange configured.`); 
 
 
- ///LAND
-  if (addressBook.landExchange) {
-    throw new Error(
-      `landExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
-    );
-  }
-  if (addressBook.land) {
-    throw new Error(
-      `land already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
-    );
-  }
-  console.log('Deploying LandExchange...');
-  const ldeployTx = await new LandExchangeFactory(wallet).deploy();
-  console.log('Deploy TX: ', ldeployTx.deployTransaction.hash);
-  await ldeployTx.deployed();
-  console.log('LandExchange deployed at ', ldeployTx.address);
-  addressBook.landExchange = ldeployTx.address;
+ // ///LAND
+ //  if (addressBook.landExchange) {
+ //    throw new Error(
+ //      `landExchange already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+ //    );
+ //  }
+ //  if (addressBook.land) {
+ //    throw new Error(
+ //      `land already exists in address book at ${sharedAddressPath}. Please move it first so it is not overwritten`
+ //    );
+ //  }
+ //  console.log('Deploying LandExchange...');
+ //  const ldeployTx = await new LandExchangeFactory(wallet).deploy();
+ //  console.log('Deploy TX: ', ldeployTx.deployTransaction.hash);
+ //  await ldeployTx.deployed();
+ //  console.log('LandExchange deployed at ', ldeployTx.address);
+ //  addressBook.landExchange = ldeployTx.address;
 
-  console.log('Deploying Land...');
-  const landDeployTx = await new LandFactory(wallet).deploy(
-    addressBook.landExchange, addressBook.space, landOperatorAddr
-  );
-  console.log(`Deploy TX: ${landDeployTx.deployTransaction.hash}`);
-  await landDeployTx.deployed();
-  console.log(`Land deployed at ${landDeployTx.address}`);
-  addressBook.land = landDeployTx.address;
-  console.log('Configuring LandExchange...');
-  const landExchange = LandExchangeFactory.connect(addressBook.landExchange, wallet);
-  const ltx = await landExchange.configure(addressBook.land);
-  console.log(`LandExchange configuration tx: ${ltx.hash}`);
-  await ltx.wait();
-  console.log(`LandExchange configured.`); 
+ //  console.log('Deploying Land...');
+ //  const landDeployTx = await new LandFactory(wallet).deploy(
+ //    addressBook.landExchange, addressBook.space, landOperatorAddr
+ //  );
+ //  console.log(`Deploy TX: ${landDeployTx.deployTransaction.hash}`);
+ //  await landDeployTx.deployed();
+ //  console.log(`Land deployed at ${landDeployTx.address}`);
+ //  addressBook.land = landDeployTx.address;
+ //  console.log('Configuring LandExchange...');
+ //  const landExchange = LandExchangeFactory.connect(addressBook.landExchange, wallet);
+ //  const ltx = await landExchange.configure(addressBook.land);
+ //  console.log(`LandExchange configuration tx: ${ltx.hash}`);
+ //  await ltx.wait();
+ //  console.log(`LandExchange configured.`); 
  
 
   await writeFileSync(sharedAddressPath, JSON.stringify(addressBook, null, 2));
   console.log(`Contracts deployed and configured.`);
-
-
-
  
-
 
 }
 
