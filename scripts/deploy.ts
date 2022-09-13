@@ -14,7 +14,7 @@ import { LandExchangeFactory } from '../typechain/LandExchangeFactory';
 async function start() {
 
 
- const landOperatorAddr = "0xae4e111b272961b41cf9e14541d54ee11a5371ba"// "0x6E68745aafCF19482022B7f5F17c00c083dCE0D1" mainnet
+ const landOperatorAddr = "0xae4e111b272961b41cf9e14541d54ee11a5371ba" 
 
   const args = require('minimist')(process.argv.slice(2));
 
