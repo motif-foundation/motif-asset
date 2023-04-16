@@ -1,6 +1,6 @@
 {
   "name": "@motif-foundation/asset",
-  "version": "1.0.42",
+  "version": "1.0.43",
   "private": false,
   "license": "GPL-3.0",
   "main": "./dist/index.js",

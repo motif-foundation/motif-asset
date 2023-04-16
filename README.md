@@ -8,6 +8,7 @@
 	remove the contract addresses from addresses/7018.json
 	update .env.rod with private key and rpc
 	yarn deploy --chainId 7018
+	yarn deploy --chainId 7019
 	check if addresses/7018.json filled with addresses
 3. Deploy library to npm
 	update package.json with the next version and username
